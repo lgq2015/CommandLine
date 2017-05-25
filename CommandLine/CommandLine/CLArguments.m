@@ -199,17 +199,9 @@ static NSMutableDictionary *_flag_and_description_;
     
     BOOL shouldPrint = [self.flags containsObject:@"help"];
     
-    if (!shouldPrint && !self.command && _requireCommand) {
+    if (!shouldPrint && !self.command && self.requireCommand) {
         //  判断是否必须要命令
         shouldPrint = YES;
-    }
-    
-    if (!shouldPrint) {
-        //  判断是否是空参数
-        BOOL input = self.allArgs.count > (self.command ? 2 : 1);
-        if (!input) {
-            shouldPrint = YES;
-        }
     }
     
     if (!shouldPrint) {
