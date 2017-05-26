@@ -301,17 +301,19 @@ static NSMutableDictionary *_flag_and_description_;
 }
 
 + (NSString *)fullPathWithPath:(NSString *)path {
-	if ([path hasPrefix:@"/"]) {
-		return path;
-	}
     
     if ([path hasPrefix:@"~"]) {
-        return [path stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:NSHomeDirectory()];
+        path = [path stringByReplacingCharactersInRange:NSMakeRange(0, 1) withString:NSHomeDirectory()];
     }
     
-	NSMutableArray *folders = [NSMutableArray arrayWithArray:[self.currentWorkDirectory componentsSeparatedByString:@"/"]];
-	NSArray *exFolders = [path componentsSeparatedByString:@"/"];
-	for (NSString *folder in exFolders) {
+    else if (![path hasPrefix:@"/"]) {
+        path = [self.currentWorkDirectory stringByAppendingPathComponent:path];
+    }
+    
+    NSMutableArray *folders = [NSMutableArray arrayWithArray:[path componentsSeparatedByString:@"/"]];
+    
+	NSMutableArray *formatFolders = [NSMutableArray array];
+	for (NSString *folder in folders) {
 		if (folder.length == 0) {
 			continue;
 		}
@@ -319,14 +321,14 @@ static NSMutableDictionary *_flag_and_description_;
 		if ([folder isEqualToString:@"."]) {
 			continue;
 		} else if ([folder isEqualToString:@".."]) {
-			[folders removeLastObject];
+			[formatFolders removeLastObject];
 		} else {
-			[folders addObject:folder];
+			[formatFolders addObject:folder];
 		}
 	}
 	
 	NSMutableString *fullPath = [NSMutableString string];
-	for (NSString *folder in folders) {
+	for (NSString *folder in formatFolders) {
 		[fullPath appendFormat:@"/%@", folder];
 	}
 	

@@ -7,11 +7,26 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "CommandLine.h"
+
+CLArguments *MakeArguments() {
+    CLArguments *arg = [CLArguments new];
+    return arg;
+}
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        // insert code here...
-        NSLog(@"Hello, World!");
+        CLArguments *arg = MakeArguments();
+        
+        [arg analyseArgumentCount:argc values:argv];
+        [arg printExplainAndExist:0];
+        
+        for (NSString *path in arg.allArgs) {
+            NSLog(@"%@", [CLArguments fullPathWithPath:path]);
+        }
+        
+        NSLog(@"%@", arg.executeFilePath);
+
     }
     return 0;
 }

@@ -37,6 +37,7 @@
 		6D0B38581ED5A5C500CCE53A /* CLDescriptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLDescriptions.m; sourceTree = "<group>"; };
 		6D0B38591ED5A5C500CCE53A /* CLExplainItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLExplainItem.h; sourceTree = "<group>"; };
 		6D0B385A1ED5A5C500CCE53A /* CLExplainItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLExplainItem.m; sourceTree = "<group>"; };
+		6DF9824B1ED81D69003859F8 /* CommandLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandLine.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +79,7 @@
 		6D0B38521ED5A5C500CCE53A /* CommandLine */ = {
 			isa = PBXGroup;
 			children = (
+				6DF9824B1ED81D69003859F8 /* CommandLine.h */,
 				6D0B38531ED5A5C500CCE53A /* CLArguments.h */,
 				6D0B38541ED5A5C500CCE53A /* CLArguments.m */,
 				6D0B38551ED5A5C500CCE53A /* CLCommandExplain.h */,
@@ -280,6 +282,7 @@
 				6D0B38511ED5A5A000CCE53A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
