@@ -23,7 +23,7 @@ typedef NSError *(^CLCommandTask)(CLArguments *arguments);
 
 @property (nonatomic, copy) CLCommandTask task;
 
-- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr explain:(NSString *)explain;
+- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional example:(NSString *)example explain:(NSString *)explain;
 
 - (BOOL)setFlag:(NSString *)flag abbr:(NSString *)abbr explain:(NSString *)explain;
 

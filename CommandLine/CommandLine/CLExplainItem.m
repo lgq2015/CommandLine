@@ -10,12 +10,22 @@
 
 @implementation CLExplainItem
 
-+ (instancetype)itemWithKey:(NSString *)key abbr:(NSString *)abbr explain:(NSString *)explain {
++ (instancetype)itemWithKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional example:(NSString *)example explain:(NSString *)explain {
     CLExplainItem *item = [CLExplainItem new];
     item.key = key;
     item.abbr = abbr;
+    item.example = example;
     item.explain = explain;
+    item.optional = optional;
     return item;
+}
+
++ (instancetype)keyValueItemWithKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional example:(NSString *)example explain:(NSString *)explain {
+    return [self itemWithKey:key abbr:abbr optional:optional example:example explain:explain];
+}
+
++ (instancetype)flagItemWithKey:(NSString *)key abbr:(NSString *)abbr explain:(NSString *)explain {
+    return [self itemWithKey:key abbr:abbr optional:YES example:nil explain:explain];
 }
 
 @end

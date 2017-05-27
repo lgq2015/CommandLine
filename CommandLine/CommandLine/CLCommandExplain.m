@@ -13,6 +13,8 @@
 
 @property (nonatomic, strong) NSMutableDictionary *mKeyExplains;
 
+@property (nonatomic, strong) NSMutableDictionary *mOptionalKeyExplains;
+
 @property (nonatomic, strong) NSMutableDictionary *mFlagExplains;
 
 @end
@@ -23,12 +25,18 @@
     self = [super init];
     if (self) {
         [self setFlag:@"help" abbr:@"h" explain:@"print help"];
+        [self setFlag:@"verbose" abbr:@"v" explain:@"Log out infomation"];
     }
     return self;
 }
 
 - (BOOL)hasAbbr:(NSString *)abbr ignoreKey:(NSString *)key {
     for (CLExplainItem *item in self.mKeyExplains.allValues) {
+        if ([item.abbr isEqualToString:abbr] && ![item.key isEqualToString:key]) {
+            return YES;
+        }
+    }
+    for (CLExplainItem *item in self.mOptionalKeyExplains.allValues) {
         if ([item.abbr isEqualToString:abbr] && ![item.key isEqualToString:key]) {
             return YES;
         }
@@ -41,11 +49,12 @@
     return NO;
 }
 
-- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr explain:(NSString *)explain {
+- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional example:(NSString *)example explain:(NSString *)explain {
     if (!key)                               return NO;
     if (abbr.length > 1)                    return NO;
     if ([self hasAbbr:abbr ignoreKey:key])  return NO;
-    self.mKeyExplains[key] = [CLExplainItem itemWithKey:key abbr:abbr explain:explain];
+    NSMutableDictionary *explains = optional ? self.mOptionalKeyExplains : self.mKeyExplains;
+    explains[key] = [CLExplainItem keyValueItemWithKey:key abbr:abbr optional:optional example:example explain:explain];
     return YES;
 }
 
@@ -53,7 +62,7 @@
     if (!flag)                               return NO;
     if (abbr.length > 1)                    return NO;
     if ([self hasAbbr:abbr ignoreKey:flag]) return NO;
-    self.mFlagExplains[flag] = [CLExplainItem itemWithKey:flag abbr:abbr explain:explain];
+    self.mFlagExplains[flag] = [CLExplainItem flagItemWithKey:flag abbr:abbr explain:explain];
     return YES;
 }
 
@@ -65,41 +74,53 @@
     
     for (CLExplainItem *item in self.mKeyExplains.allValues) {
         printf("%s", prefix.UTF8String);
-        if (!item.isRequire) {
-//            printf("[");
-        }
-//        printf("--%s", item.key.UTF8String);
-//        if (item.abbr) {
-            printf(" -%s", item.abbr.UTF8String);
-//        }
-        if (!item.isRequire) {
-//            printf("]");
-        }
-        printf(" %s\n", item.explain.UTF8String);
-    }
-    
-    for (CLExplainItem *item in self.mFlagExplains.allValues) {
-        printf("%s", prefix.UTF8String);
-        if (!item.isRequire) {
-            printf("[");
-        }
         printf("--%s", item.key.UTF8String);
         if (item.abbr) {
             printf(" -%s", item.abbr.UTF8String);
         }
-        if (!item.isRequire) {
-            printf("]");
+        if (item.example) {
+            printf(" \"%s\"", item.example.UTF8String);
+        }
+        printf(":\n%s%s\n", [prefix stringByAppendingString:@"\t\t"].UTF8String, item.explain.UTF8String);
+    }
+    
+    for (CLExplainItem *item in self.mOptionalKeyExplains.allValues) {
+        printf("%s[--%s", prefix.UTF8String, item.key.UTF8String);
+        if (item.abbr) {
+            printf(" -%s", item.abbr.UTF8String);
+        }
+        if (item.example) {
+            printf(" \"%s\"", item.example.UTF8String);
+        }
+        printf("]");
+        printf(":\n%s%s\n", [prefix stringByAppendingString:@"\t\t"].UTF8String, item.explain.UTF8String);
+    }
+    
+    for (CLExplainItem *item in self.mFlagExplains.allValues) {
+        printf("%s", prefix.UTF8String);
+        printf("--%s", item.key.UTF8String);
+        if (item.abbr) {
+            printf(" -%s", item.abbr.UTF8String);
         }
         printf(" %s\n", item.explain.UTF8String);
     }
 }
 
 - (CLExplainItem *)keyItemWithKey:(NSString *)key {
-    return self.mKeyExplains[key];
+    if (self.mKeyExplains[key]) {
+        return self.mKeyExplains[key];
+    } else {
+        return self.mOptionalKeyExplains[key];
+    }
 }
 
 - (CLExplainItem *)keyItemWithKeyAbbr:(NSString *)keyAbbr {
     for (CLExplainItem *item in self.mKeyExplains.allValues) {
+        if ([item.abbr isEqualToString:keyAbbr]) {
+            return item;
+        }
+    }
+    for (CLExplainItem *item in self.mOptionalKeyExplains.allValues) {
         if ([item.abbr isEqualToString:keyAbbr]) {
             return item;
         }
@@ -121,7 +142,9 @@
 }
 
 - (NSDictionary<NSString *,CLExplainItem *> *)keyExplains {
-    return [self.mKeyExplains copy];
+    NSMutableDictionary *keyExplains = [self.mKeyExplains mutableCopy];
+    [keyExplains setValuesForKeysWithDictionary:self.mOptionalKeyExplains];
+    return [keyExplains copy];
 }
 
 - (NSDictionary<NSString *,CLExplainItem *> *)flagExplains {
@@ -133,6 +156,13 @@
         _mKeyExplains = [[NSMutableDictionary alloc] init];
     }
     return _mKeyExplains;
+}
+
+- (NSMutableDictionary *)mOptionalKeyExplains {
+    if (!_mOptionalKeyExplains) {
+        _mOptionalKeyExplains = [[NSMutableDictionary alloc] init];
+    }
+    return _mOptionalKeyExplains;
 }
 
 - (NSMutableDictionary *)mFlagExplains {

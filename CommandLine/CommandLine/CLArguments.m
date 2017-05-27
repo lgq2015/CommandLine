@@ -30,6 +30,7 @@ static NSMutableDictionary *_flag_and_description_;
     self = [super init];
     if (self) {
         [self setFlag:@"help" abbr:@"h" explain:@"print help"];
+        [self setFlag:@"verbose" abbr:@"v" explain:@"Log out infomation"];
     }
     return self;
 }
@@ -42,20 +43,20 @@ static NSMutableDictionary *_flag_and_description_;
     return self;
 }
 
-- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr explain:(NSString *)explain {
-    return [self setKey:key abbr:abbr explain:explain forCommand:nil];
+- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional example:(NSString *)example explain:(NSString *)explain {
+    return [self setKey:key abbr:abbr optional:optional example:example explain:explain forCommand:nil];
 }
 
-- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr explain:(NSString *)explain forCommand:(NSString *)command {
+- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional example:(NSString *)example explain:(NSString *)explain forCommand:(NSString *)command {
     if (command.length == 0) {
-        return [self.explain setKey:key abbr:abbr explain:explain];
+        return [self.explain setKey:key abbr:abbr optional:optional example:example explain:explain];
     }
     CLCommandExplain *commandExplain = self.commandExplain[command];
     if (!commandExplain) {
         commandExplain = [[CLCommandExplain alloc] init];
         self.commandExplain[command] = commandExplain;
     }
-    return [commandExplain setKey:key abbr:abbr explain:explain];
+    return [commandExplain setKey:key abbr:abbr optional:optional example:example explain:explain];
 }
 
 - (BOOL)setFlag:(NSString *)flag abbr:(NSString *)abbr explain:(NSString *)explain {
@@ -76,7 +77,8 @@ static NSMutableDictionary *_flag_and_description_;
 
 - (BOOL)setCommand:(NSString *)command explain:(NSString *)explain {
     if (command.length == 0) {
-        return NO;
+        self.explain.explain = explain;
+        return YES;
     }
     CLCommandExplain *commandExplain = self.commandExplain[command];
     if (!commandExplain) {
@@ -221,7 +223,7 @@ static NSMutableDictionary *_flag_and_description_;
     if (!shouldPrint) {
         //  判断必要参数是否存在
         for (CLExplainItem *item in commandExplain.keyExplains.allValues) {
-            if (item.isRequire && ![self.keyValues.allKeys containsObject:item.key]) {
+            if (!item.isOptional && ![self.keyValues.allKeys containsObject:item.key]) {
                 shouldPrint = YES;
                 break;
             }
@@ -230,12 +232,13 @@ static NSMutableDictionary *_flag_and_description_;
     
     if (!shouldPrint) {
         //  判断必要flag是否存在
-        for (CLExplainItem *item in commandExplain.flagExplains.allValues) {
-            if (item.isRequire && ![self.flags containsObject:item.key]) {
-                shouldPrint = YES;
-                break;
-            }
-        }
+        //  flag均为非必要
+//        for (CLExplainItem *item in commandExplain.flagExplains.allValues) {
+//            if (!item.isOptional && ![self.flags containsObject:item.key]) {
+//                shouldPrint = YES;
+//                break;
+//            }
+//        }
     }
     
     if (!shouldPrint && self.IOPathMinimumCount) {
@@ -270,7 +273,8 @@ static NSMutableDictionary *_flag_and_description_;
 - (void)printExplain:(CLCommandExplain *)explain {
     if (self.explain == explain) {
         if (self.commandExplain.count > 0) {
-            printf("Usage: %s command\ncommands are:\n", self.executeFilePath.lastPathComponent.UTF8String);
+            printf("Usage: %s command\n", self.executeFilePath.lastPathComponent.UTF8String);
+            printf("commands are:\n");
             for (NSString *command in self.commandExplain.allKeys) {
                 CLCommandExplain *commandExplain = self.commandExplain[command];
                 printf("\t%s: %s\n", command.UTF8String, commandExplain.explain.UTF8String);

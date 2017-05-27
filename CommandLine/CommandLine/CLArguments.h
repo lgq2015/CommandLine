@@ -12,6 +12,8 @@
 #define CL_ERROR_NO_EXPLAIN (NSIntegerMax - 1)
 #define CL_ERROR_NO_TASK    (NSIntegerMax - 2)
 
+#define CLVerbose(arg, ...) if ([arg hasFlags:@"verbose"]) printf(__VA_ARGS__);
+
 @class CLArguments;
 
 typedef NSError *(^CLCommandTask)(CLArguments *arguments);
@@ -35,8 +37,8 @@ typedef NSError *(^CLCommandTask)(CLArguments *arguments);
 - (instancetype)initWithRequireCommand:(BOOL)requireCommand;
 
 - (void)setIOPathMinimumCount:(NSUInteger)ioPathMinimumCount;
-- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr explain:(NSString *)explain;
-- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr explain:(NSString *)explain forCommand:(NSString *)command;
+- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional example:(NSString *)example explain:(NSString *)explain;
+- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional example:(NSString *)example explain:(NSString *)explain forCommand:(NSString *)command;
 - (BOOL)setFlag:(NSString *)flag abbr:(NSString *)abbr explain:(NSString *)explain;
 - (BOOL)setFlag:(NSString *)flag abbr:(NSString *)abbr explain:(NSString *)explain forCommand:(NSString *)command;
 - (BOOL)setCommand:(NSString *)command explain:(NSString *)explain;

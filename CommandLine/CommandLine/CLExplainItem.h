@@ -14,10 +14,14 @@
 
 @property (nonatomic, copy) NSString *abbr;
 
+@property (nonatomic, copy) NSString *example;
+
 @property (nonatomic, copy) NSString *explain;
 
-@property (nonatomic, assign, getter=isRequire) BOOL require;
+@property (nonatomic, assign, getter=isOptional) BOOL optional;
 
-+ (instancetype)itemWithKey:(NSString *)key abbr:(NSString *)abbr explain:(NSString *)explain;
++ (instancetype)keyValueItemWithKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional example:(NSString *)example explain:(NSString *)explain;
+
++ (instancetype)flagItemWithKey:(NSString *)key abbr:(NSString *)abbr explain:(NSString *)explain;
 
 @end
