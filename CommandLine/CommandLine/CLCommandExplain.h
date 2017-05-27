@@ -9,6 +9,10 @@
 #import <Foundation/Foundation.h>
 #import "CLExplainItem.h"
 
+@class CLArguments;
+
+typedef NSError *(^CLCommandTask)(CLArguments *arguments);
+
 @interface CLCommandExplain : NSObject
 
 @property (nonatomic, copy) NSString *explain;
@@ -16,6 +20,8 @@
 @property (nonatomic, strong, readonly) NSDictionary<NSString *, CLExplainItem *> *keyExplains;
 
 @property (nonatomic, strong, readonly) NSDictionary<NSString *, CLExplainItem *> *flagExplains;
+
+@property (nonatomic, copy) CLCommandTask task;
 
 - (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr explain:(NSString *)explain;
 

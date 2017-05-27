@@ -10,5 +10,6 @@
 #define CommandLine_h
 
 #import "CLArguments.h"
+#import "NSTask+CommandLine.h"
 
 #endif /* CommandLine_h */

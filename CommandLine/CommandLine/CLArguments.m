@@ -87,6 +87,19 @@ static NSMutableDictionary *_flag_and_description_;
     return YES;
 }
 
+- (BOOL)setCommand:(NSString *)command task:(CLCommandTask)task {
+    if (command.length == 0) {
+        return NO;
+    }
+    CLCommandExplain *commandExplain = self.commandExplain[command];
+    if (!commandExplain) {
+        commandExplain = [[CLCommandExplain alloc] init];
+        self.commandExplain[command] = commandExplain;
+    }
+    commandExplain.task = task;
+    return YES;
+}
+
 - (CLCommandExplain *)explain {
     if (!_explain) {
         _explain = [[CLCommandExplain alloc] init];
@@ -166,6 +179,7 @@ static NSMutableDictionary *_flag_and_description_;
                 CLExplainItem *explainItem = [explain flagItemWithFlagAbbr:abbr];
                 if (explainItem) {
                     [flags addObject:explainItem.key];
+                    continue;
                 } else {
                     explainItem = [explain keyItemWithKeyAbbr:abbr];
                     if (explainItem) {
@@ -232,6 +246,25 @@ static NSMutableDictionary *_flag_and_description_;
         [self printExplain:commandExplain];
         exit(code);
     }
+}
+
+- (NSError *)executeCommand {
+    if (self.command == 0) {
+        return [NSError errorWithDomain:@"com.unique.commandline" code:CL_ERROR_NO_COMMAND userInfo:@{NSLocalizedDescriptionKey:@"User did not type in command."}];
+    }
+    
+    CLCommandExplain *explain = self.commandExplain[self.command];
+    
+    if (!explain) {
+        return [NSError errorWithDomain:@"com.unique.commandline" code:CL_ERROR_NO_EXPLAIN userInfo:@{NSLocalizedDescriptionKey:@"Can not find command config."}];
+    }
+    
+    CLCommandTask task = explain.task;
+    if (!task) {
+        return [NSError errorWithDomain:@"com.unique.commandline" code:CL_ERROR_NO_TASK userInfo:@{NSLocalizedDescriptionKey:@"The command has not task."}];
+    }
+    
+    return task(self);
 }
 
 - (void)printExplain:(CLCommandExplain *)explain {

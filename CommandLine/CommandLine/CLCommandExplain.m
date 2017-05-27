@@ -7,6 +7,7 @@
 //
 
 #import "CLCommandExplain.h"
+#import "CLArguments.h"
 
 @interface CLCommandExplain ()
 

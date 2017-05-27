@@ -12,6 +12,7 @@
 		6D0B385C1ED5A5C500CCE53A /* CLCommandExplain.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D0B38561ED5A5C500CCE53A /* CLCommandExplain.m */; };
 		6D0B385D1ED5A5C500CCE53A /* CLDescriptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D0B38581ED5A5C500CCE53A /* CLDescriptions.m */; };
 		6D0B385E1ED5A5C500CCE53A /* CLExplainItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D0B385A1ED5A5C500CCE53A /* CLExplainItem.m */; };
+		6DF982511ED8241B003859F8 /* NSTask+CommandLine.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DF982501ED8241B003859F8 /* NSTask+CommandLine.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -38,6 +39,8 @@
 		6D0B38591ED5A5C500CCE53A /* CLExplainItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CLExplainItem.h; sourceTree = "<group>"; };
 		6D0B385A1ED5A5C500CCE53A /* CLExplainItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CLExplainItem.m; sourceTree = "<group>"; };
 		6DF9824B1ED81D69003859F8 /* CommandLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandLine.h; sourceTree = "<group>"; };
+		6DF9824F1ED8241B003859F8 /* NSTask+CommandLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSTask+CommandLine.h"; sourceTree = "<group>"; };
+		6DF982501ED8241B003859F8 /* NSTask+CommandLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSTask+CommandLine.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,6 +91,8 @@
 				6D0B38581ED5A5C500CCE53A /* CLDescriptions.m */,
 				6D0B38591ED5A5C500CCE53A /* CLExplainItem.h */,
 				6D0B385A1ED5A5C500CCE53A /* CLExplainItem.m */,
+				6DF9824F1ED8241B003859F8 /* NSTask+CommandLine.h */,
+				6DF982501ED8241B003859F8 /* NSTask+CommandLine.m */,
 			);
 			path = CommandLine;
 			sourceTree = "<group>";
@@ -150,6 +155,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6D0B385C1ED5A5C500CCE53A /* CLCommandExplain.m in Sources */,
+				6DF982511ED8241B003859F8 /* NSTask+CommandLine.m in Sources */,
 				6D0B385D1ED5A5C500CCE53A /* CLDescriptions.m in Sources */,
 				6D0B385E1ED5A5C500CCE53A /* CLExplainItem.m in Sources */,
 				6D0B384C1ED5A5A000CCE53A /* main.m in Sources */,

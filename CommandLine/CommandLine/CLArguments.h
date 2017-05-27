@@ -8,6 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+#define CL_ERROR_NO_COMMAND (NSIntegerMax - 0)
+#define CL_ERROR_NO_EXPLAIN (NSIntegerMax - 1)
+#define CL_ERROR_NO_TASK    (NSIntegerMax - 2)
+
+@class CLArguments;
+
+typedef NSError *(^CLCommandTask)(CLArguments *arguments);
+
 @interface CLArguments : NSObject
 
 @property (nonatomic, strong, readonly) NSString *executeFilePath;
@@ -32,9 +40,11 @@
 - (BOOL)setFlag:(NSString *)flag abbr:(NSString *)abbr explain:(NSString *)explain;
 - (BOOL)setFlag:(NSString *)flag abbr:(NSString *)abbr explain:(NSString *)explain forCommand:(NSString *)command;
 - (BOOL)setCommand:(NSString *)command explain:(NSString *)explain;
+- (BOOL)setCommand:(NSString *)command task:(CLCommandTask)task;
 
 - (void)analyseArgumentCount:(NSUInteger)count values:(const char * [])argvs;
 - (void)printExplainAndExist:(int)code;
+- (NSError *)executeCommand;
 
 - (BOOL)hasKey:(NSString *)key;
 
