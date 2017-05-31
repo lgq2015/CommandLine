@@ -22,25 +22,45 @@
 
 @end
 
+id CLLaunchWithArguments(NSArray *arguments) {
+	NSMutableArray *args = [NSMutableArray arrayWithArray:arguments];
+	NSString *launchPath = arguments.firstObject;
+	[args removeObjectAtIndex:0];
+	NSTask *task = [NSTask new];
+	NSPipe *pipe = [NSPipe pipe];
+	NSFileHandle *file = [pipe fileHandleForReading];
+	
+	task.launchPath = launchPath;
+	task.arguments = args;
+	task.standardInput = [NSFileHandle fileHandleWithNullDevice];
+	task.standardOutput = pipe;
+	task.standardError = pipe;
+	[task launch];
+	
+	[task waitUntilExit];
+	NSData *data = file.availableData;
+	NSString *output = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	if ([output hasSuffix:@"\n"]) {
+		output = [output substringToIndex:output.length - 1];
+	}
+	
+	if (task.terminationStatus == 0) {
+		return output;
+	} else {
+		NSString *domain = [NSString stringWithFormat:@"com.unique.commandline.%@", launchPath.lastPathComponent.lowercaseString];
+		return [NSError errorWithDomain:domain code:task.terminationStatus userInfo:@{NSLocalizedDescriptionKey:output}];
+	}
+}
+
 @implementation NSString (CommandLine)
 
 + (instancetype)stringWithLaunchArguments:(NSArray<NSString *> *)arguments {
-    NSMutableArray *args = [NSMutableArray arrayWithArray:arguments];
-    [args removeObjectAtIndex:0];
-    NSTask *task = [NSTask new];
-    NSPipe *pipe = [NSPipe pipe];
-    NSFileHandle *file = [pipe fileHandleForReading];
-    
-    task.launchPath = arguments.firstObject;
-    task.arguments = args;
-    task.standardInput = [NSFileHandle fileHandleWithNullDevice];
-    task.standardOutput = pipe;
-    task.standardError = pipe;
-    [task launch];
-    
-    [task waitUntilExit];
-    NSData *data = file.availableData;
-    return [[self alloc] initWithData:data encoding:NSUTF8StringEncoding];
+	id res = CLLaunchWithArguments(arguments);
+	if ([res isKindOfClass:[NSString class]]) {
+		return res;
+	} else {
+		return nil;
+	}
 }
 
 @end

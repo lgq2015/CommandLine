@@ -19,3 +19,5 @@
 + (instancetype)stringWithLaunchArguments:(NSArray<NSString *> *)arguments;
 
 @end
+
+id CLLaunchWithArguments(NSArray *arguments);

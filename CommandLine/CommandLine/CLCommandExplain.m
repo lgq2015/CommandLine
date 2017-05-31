@@ -17,6 +17,8 @@
 
 @property (nonatomic, strong) NSMutableDictionary *mFlagExplains;
 
+@property (nonatomic, strong) NSMutableDictionary *mDefaultFlagExplains;
+
 @end
 
 @implementation CLCommandExplain
@@ -24,8 +26,8 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        [self setFlag:@"help" abbr:@"h" explain:@"print help"];
-        [self setFlag:@"verbose" abbr:@"v" explain:@"Log out infomation"];
+        [self setDefaultFlag:@"help" abbr:@"h" explain:@"print help"];
+        [self setDefaultFlag:@"verbose" abbr:@"v" explain:@"Log out infomation"];
     }
     return self;
 }
@@ -46,6 +48,11 @@
             return YES;
         }
     }
+    for (CLExplainItem *item in self.mDefaultFlagExplains.allValues) {
+        if ([item.abbr isEqualToString:abbr] && ![item.key isEqualToString:key]) {
+            return YES;
+        }
+    }
     return NO;
 }
 
@@ -62,14 +69,22 @@
 }
 
 - (BOOL)setFlag:(NSString *)flag abbr:(NSString *)abbr explain:(NSString *)explain {
-    if (!flag)                               return NO;
+    if (!flag)                              return NO;
     if (abbr.length > 1)                    return NO;
     if ([self hasAbbr:abbr ignoreKey:flag]) return NO;
     self.mFlagExplains[flag] = [CLExplainItem flagItemWithKey:flag abbr:abbr explain:explain];
     return YES;
 }
 
-- (void)printExplainWithTabCount:(NSUInteger)tabCount {
+- (BOOL)setDefaultFlag:(NSString *)flag abbr:(NSString *)abbr explain:(NSString *)explain {
+    if (!flag)                              return NO;
+    if (abbr.length > 1)                    return NO;
+    if ([self hasAbbr:abbr ignoreKey:flag]) return NO;
+    self.mDefaultFlagExplains[flag] = [CLExplainItem flagItemWithKey:flag abbr:abbr explain:explain];
+    return YES;
+}
+
+- (void)printExplainWithTabCount:(NSUInteger)tabCount withExplain:(BOOL)withExplain {
     NSMutableString *prefix = [NSMutableString string];
     for (int i = 0; i < tabCount; i++) {
         [prefix appendString:@"\t"];
@@ -84,9 +99,11 @@
         if (item.example) {
             printf(" \"%s\"", item.example.UTF8String);
         }
-        printf(":\n%s%s\n", [prefix stringByAppendingString:@"\t\t"].UTF8String, item.explain.UTF8String);
+		if (withExplain) {
+			printf(":\n%s%s\n", [prefix stringByAppendingString:@"\t\t"].UTF8String, item.explain.UTF8String);
+		}
     }
-    
+	
     for (CLExplainItem *item in self.mOptionalKeyExplains.allValues) {
         printf("%s[--%s", prefix.UTF8String, item.key.UTF8String);
         if (item.abbr) {
@@ -95,8 +112,12 @@
         if (item.example) {
             printf(" \"%s\"", item.example.UTF8String);
         }
-        printf("]");
-        printf(":\n%s%s\n", [prefix stringByAppendingString:@"\t\t"].UTF8String, item.explain.UTF8String);
+		printf("]");
+		if (withExplain) {
+			printf(":\n%s%s\n", [prefix stringByAppendingString:@"\t\t"].UTF8String, item.explain.UTF8String);
+		} else {
+			printf("\n");
+		}
     }
     
     for (CLExplainItem *item in self.mFlagExplains.allValues) {
@@ -104,8 +125,25 @@
         printf("--%s", item.key.UTF8String);
         if (item.abbr) {
             printf(" -%s", item.abbr.UTF8String);
-        }
-        printf(" %s\n", item.explain.UTF8String);
+		}
+		if (withExplain) {
+			printf(" %s\n", item.explain.UTF8String);
+		} else {
+			printf("\n");
+		}
+    }
+    
+    for (CLExplainItem *item in self.mDefaultFlagExplains.allValues) {
+        printf("%s", prefix.UTF8String);
+        printf("--%s", item.key.UTF8String);
+        if (item.abbr) {
+            printf(" -%s", item.abbr.UTF8String);
+		}
+		if (withExplain) {
+			printf(" %s\n", item.explain.UTF8String);
+		} else {
+			printf("\n");
+		}
     }
 }
 
@@ -145,11 +183,20 @@
 }
 
 - (CLExplainItem *)flagItemWithFlag:(NSString *)flag {
-    return self.mFlagExplains[flag];
+    if (self.mFlagExplains[flag]) {
+        return self.mFlagExplains[flag];
+    } else {
+        return self.mDefaultFlagExplains[flag];
+    }
 }
 
 - (CLExplainItem *)flagItemWithFlagAbbr:(NSString *)flagAbbr {
     for (CLExplainItem *item in self.mFlagExplains.allValues) {
+        if ([item.abbr isEqualToString:flagAbbr]) {
+            return item;
+        }
+    }
+    for (CLExplainItem *item in self.mDefaultFlagExplains.allValues) {
         if ([item.abbr isEqualToString:flagAbbr]) {
             return item;
         }
@@ -186,6 +233,13 @@
         _mFlagExplains = [[NSMutableDictionary alloc] init];
     }
     return _mFlagExplains;
+}
+
+- (NSMutableDictionary *)mDefaultFlagExplains {
+    if (!_mDefaultFlagExplains) {
+        _mDefaultFlagExplains = [[NSMutableDictionary alloc] init];
+    }
+    return _mDefaultFlagExplains;
 }
 
 @end

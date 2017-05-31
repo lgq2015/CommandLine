@@ -9,10 +9,7 @@
 #import "CLArguments.h"
 #import "CLCommandExplain.h"
 
-static NSMutableDictionary *_key_and_description_;
-static NSMutableDictionary *_flag_and_description_;
-
-
+#define CLError(c, desc) [NSError errorWithDomain:@"com.unique.commandline" code:c userInfo:@{NSLocalizedDescriptionKey:desc}]
 
 @interface CLArguments ()
 
@@ -31,8 +28,7 @@ static NSMutableDictionary *_flag_and_description_;
 - (instancetype)init {
     self = [super init];
     if (self) {
-        [self setFlag:@"help" abbr:@"h" explain:@"print help"];
-        [self setFlag:@"verbose" abbr:@"v" explain:@"Log out infomation"];
+//		[self.explain setDefaultFlag:@"cmd" abbr:nil explain:@"Print all command"];
     }
     return self;
 }
@@ -293,20 +289,23 @@ static NSMutableDictionary *_flag_and_description_;
         if (self.commandExplain.count > 0) {
             printf("Usage: %s command\n", self.executeFilePath.lastPathComponent.UTF8String);
             printf("commands are:\n");
-            for (NSString *command in self.commandExplain.allKeys) {
+			NSArray *keys = [self.commandExplain.allKeys sortedArrayUsingComparator:^NSComparisonResult(NSString *obj1, NSString *obj2) {
+				return [obj1 compare:obj2];
+			}];
+            for (NSString *command in keys) {
                 CLCommandExplain *commandExplain = self.commandExplain[command];
                 printf("\t%s: %s\n", command.UTF8String, commandExplain.explain.UTF8String);
-                [commandExplain printExplainWithTabCount:2];
+                [commandExplain printExplainWithTabCount:2 withExplain:NO];
                 printf("\n");
             }
         } else {
             printf("Usage: %s\n", self.executeFilePath.lastPathComponent.UTF8String);
-            [explain printExplainWithTabCount:1];
+            [explain printExplainWithTabCount:1 withExplain:NO];
         }
     } else {
         printf("Usage: %s %s\n", self.executeFilePath.lastPathComponent.UTF8String, self.command.UTF8String);
         printf("       %s\n", explain.explain.UTF8String);
-        [explain printExplainWithTabCount:1];
+        [explain printExplainWithTabCount:1 withExplain:YES];
     }
     printf("\n");
 }

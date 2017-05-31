@@ -13,7 +13,6 @@
 #define CL_ERROR_NO_TASK    (NSIntegerMax - 2)
 
 #define CLVerbose(arg, ...) if ([arg hasFlags:@"verbose"]) printf(__VA_ARGS__);
-#define CLError(c, desc) [NSError errorWithDomain:@"com.unique.commandline" code:c userInfo:@{NSLocalizedDescriptionKey:desc}]
 
 @class CLArguments;
 

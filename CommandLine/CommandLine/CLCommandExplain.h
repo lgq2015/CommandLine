@@ -27,6 +27,7 @@ typedef NSError *(^CLCommandTask)(CLArguments *arguments);
 - (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional defaultValue:(NSString *)defaultValue example:(NSString *)example explain:(NSString *)explain;
 
 - (BOOL)setFlag:(NSString *)flag abbr:(NSString *)abbr explain:(NSString *)explain;
+- (BOOL)setDefaultFlag:(NSString *)flag abbr:(NSString *)abbr explain:(NSString *)explain;
 
 - (CLExplainItem *)keyItemWithKey:(NSString *)key;
 - (CLExplainItem *)keyItemWithKeyAbbr:(NSString *)keyAbbr;
@@ -36,6 +37,6 @@ typedef NSError *(^CLCommandTask)(CLArguments *arguments);
 - (CLExplainItem *)flagItemWithFlag:(NSString *)flag;
 - (CLExplainItem *)flagItemWithFlagAbbr:(NSString *)flagAbbr;
 
-- (void)printExplainWithTabCount:(NSUInteger)tabCount;
+- (void)printExplainWithTabCount:(NSUInteger)tabCount withExplain:(BOOL)withExplain;
 
 @end
