@@ -10,6 +10,12 @@
 
 @interface NSTask (CommandLine)
 
-+ (NSTask *)launchedTaskWithAarguments:(NSArray<NSString *> *)arguments waitUntilExit:(BOOL)waitUntilExit;
++ (instancetype)launchedTaskWithArguments:(NSArray<NSString *> *)arguments waitUntilExit:(BOOL)waitUntilExit;
+
+@end
+
+@interface NSString (CommandLine)
+
++ (instancetype)stringWithLaunchArguments:(NSArray<NSString *> *)arguments;
 
 @end

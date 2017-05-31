@@ -22,6 +22,8 @@ static NSMutableDictionary *_flag_and_description_;
 
 @property (nonatomic, assign) NSUInteger IOPathMinimumCount;
 
+@property (nonatomic, strong, readonly) CLCommandExplain *currentExplain;
+
 @end
 
 @implementation CLArguments
@@ -48,6 +50,14 @@ static NSMutableDictionary *_flag_and_description_;
 }
 
 - (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional example:(NSString *)example explain:(NSString *)explain forCommand:(NSString *)command {
+    return [self setKey:key abbr:abbr optional:optional defaultValue:nil example:example explain:explain forCommand:command];
+}
+
+- (BOOL)setOptionalKey:(NSString *)key abbr:(NSString *)abbr defaultValue:(NSString *)defaultValue example:(NSString *)example explain:(NSString *)explain forCommand:(NSString *)command {
+    return [self setKey:key abbr:abbr optional:YES defaultValue:defaultValue example:example explain:explain forCommand:command];
+}
+
+- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional defaultValue:(NSString *)defaultValue example:(NSString *)example explain:(NSString *)explain forCommand:(NSString *)command {
     if (command.length == 0) {
         return [self.explain setKey:key abbr:abbr optional:optional example:example explain:explain];
     }
@@ -91,7 +101,8 @@ static NSMutableDictionary *_flag_and_description_;
 
 - (BOOL)setCommand:(NSString *)command task:(CLCommandTask)task {
     if (command.length == 0) {
-        return NO;
+        self.explain.task = task;
+        return YES;
     }
     CLCommandExplain *commandExplain = self.commandExplain[command];
     if (!commandExplain) {
@@ -252,19 +263,26 @@ static NSMutableDictionary *_flag_and_description_;
 }
 
 - (NSError *)executeCommand {
-    if (self.command == 0) {
-        return [NSError errorWithDomain:@"com.unique.commandline" code:CL_ERROR_NO_COMMAND userInfo:@{NSLocalizedDescriptionKey:@"User did not type in command."}];
+    if (self.command == nil) {
+        if (self.requireCommand) {
+            return CLError(CL_ERROR_NO_COMMAND, @"User did not type in command.");
+        }
+        CLCommandTask task = self.explain.task;
+        if (!task) {
+            
+        }
+        
     }
     
     CLCommandExplain *explain = self.commandExplain[self.command];
     
     if (!explain) {
-        return [NSError errorWithDomain:@"com.unique.commandline" code:CL_ERROR_NO_EXPLAIN userInfo:@{NSLocalizedDescriptionKey:@"Can not find command config."}];
+        return CLError(CL_ERROR_NO_EXPLAIN, @"Can not find command config.");
     }
     
     CLCommandTask task = explain.task;
     if (!task) {
-        return [NSError errorWithDomain:@"com.unique.commandline" code:CL_ERROR_NO_TASK userInfo:@{NSLocalizedDescriptionKey:@"The command has not task."}];
+        return CLError(CL_ERROR_NO_TASK, @"The command has not task.");
     }
     
     return task(self);
@@ -294,7 +312,12 @@ static NSMutableDictionary *_flag_and_description_;
 }
 
 - (BOOL)hasKey:(NSString *)key {
-	return self.keyValues[key]?YES:NO;
+    BOOL hasKey = self.keyValues[key]?YES:NO;
+    if (hasKey) {
+        return YES;
+    } else {
+        return [self.currentExplain keyItemIsOptionalWithDefaultValue:key];
+    }
 }
 
 - (BOOL)hasFlags:(NSString *)flags {
@@ -302,7 +325,11 @@ static NSMutableDictionary *_flag_and_description_;
 }
 
 - (NSString *)stringValueForKey:(NSString *)key {
-	return self.keyValues[key];
+	NSString *value = self.keyValues[key];
+    if (!value) {
+        value = [self.currentExplain defaultValueForOptionalKey:key];
+    }
+    return value;
 }
 
 - (NSNumber *)numberValueForKey:(NSString *)key {
@@ -331,6 +358,16 @@ static NSMutableDictionary *_flag_and_description_;
 	} else {
 		return [CLArguments fullPathWithPath:self.ioPaths[index]];
 	}
+}
+
+- (CLCommandExplain *)currentExplain {
+    CLCommandExplain *explain = nil;
+    if (self.command.length) {
+        explain = self.commandExplain[self.command];
+    } else {
+        explain = self.explain;
+    }
+    return explain;
 }
 
 + (NSString *)currentWorkDirectory {

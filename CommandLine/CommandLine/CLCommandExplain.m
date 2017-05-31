@@ -50,11 +50,14 @@
 }
 
 - (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional example:(NSString *)example explain:(NSString *)explain {
+    return [self setKey:key abbr:abbr optional:optional defaultValue:nil example:example explain:explain];
+}
+
+- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional defaultValue:(NSString *)defaultValue example:(NSString *)example explain:(NSString *)explain {
     if (!key)                               return NO;
     if (abbr.length > 1)                    return NO;
     if ([self hasAbbr:abbr ignoreKey:key])  return NO;
-    NSMutableDictionary *explains = optional ? self.mOptionalKeyExplains : self.mKeyExplains;
-    explains[key] = [CLExplainItem keyValueItemWithKey:key abbr:abbr optional:optional example:example explain:explain];
+    self.mOptionalKeyExplains[key] = [CLExplainItem keyValueItemWithKey:key abbr:abbr optional:optional defaultValue:defaultValue example:example explain:explain];
     return YES;
 }
 
@@ -126,6 +129,19 @@
         }
     }
     return nil;
+}
+
+- (BOOL)keyItemIsOptionalWithDefaultValue:(NSString *)key {
+    return [self defaultValueForOptionalKey:key]?YES:NO;
+}
+
+- (NSString *)defaultValueForOptionalKey:(NSString *)key {
+    CLExplainItem *item = [self keyItemWithKey:key];
+    if (item.isOptional && item.defaultValue) {
+        return item.defaultValue;
+    } else {
+        return nil;
+    }
 }
 
 - (CLExplainItem *)flagItemWithFlag:(NSString *)flag {

@@ -24,11 +24,14 @@ typedef NSError *(^CLCommandTask)(CLArguments *arguments);
 @property (nonatomic, copy) CLCommandTask task;
 
 - (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional example:(NSString *)example explain:(NSString *)explain;
+- (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional defaultValue:(NSString *)defaultValue example:(NSString *)example explain:(NSString *)explain;
 
 - (BOOL)setFlag:(NSString *)flag abbr:(NSString *)abbr explain:(NSString *)explain;
 
 - (CLExplainItem *)keyItemWithKey:(NSString *)key;
 - (CLExplainItem *)keyItemWithKeyAbbr:(NSString *)keyAbbr;
+- (BOOL)keyItemIsOptionalWithDefaultValue:(NSString *)key;
+- (NSString *)defaultValueForOptionalKey:(NSString *)key;
 
 - (CLExplainItem *)flagItemWithFlag:(NSString *)flag;
 - (CLExplainItem *)flagItemWithFlagAbbr:(NSString *)flagAbbr;
