@@ -37,9 +37,12 @@ id CLLaunchWithArguments(NSArray *arguments) {
 	task.standardError = pipe;
 	[task launch];
 	
-	[task waitUntilExit];
-	NSData *data = file.availableData;
-	NSString *output = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+//	[task waitUntilExit];
+	NSMutableData *mdata = [NSMutableData data];
+	while (task.isRunning) {
+		[mdata appendData:file.availableData];
+	}
+	NSString *output = [[NSString alloc] initWithData:mdata encoding:NSUTF8StringEncoding];
 	if ([output hasSuffix:@"\n"]) {
 		output = [output substringToIndex:output.length - 1];
 	}

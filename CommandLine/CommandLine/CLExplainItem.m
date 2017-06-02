@@ -17,6 +17,7 @@
     item.example = example;
     item.explain = explain;
     item.optional = optional;
+	item.defaultValue = defaultValue;
     return item;
 }
 

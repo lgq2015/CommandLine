@@ -55,14 +55,14 @@
 
 - (BOOL)setKey:(NSString *)key abbr:(NSString *)abbr optional:(BOOL)optional defaultValue:(NSString *)defaultValue example:(NSString *)example explain:(NSString *)explain forCommand:(NSString *)command {
     if (command.length == 0) {
-        return [self.explain setKey:key abbr:abbr optional:optional example:example explain:explain];
+		return [self.explain setKey:key abbr:abbr optional:optional defaultValue:defaultValue example:example explain:explain];
     }
     CLCommandExplain *commandExplain = self.commandExplain[command];
     if (!commandExplain) {
         commandExplain = [[CLCommandExplain alloc] init];
         self.commandExplain[command] = commandExplain;
-    }
-    return [commandExplain setKey:key abbr:abbr optional:optional example:example explain:explain];
+	}
+	return [commandExplain setKey:key abbr:abbr optional:optional defaultValue:defaultValue example:example explain:explain];
 }
 
 - (BOOL)setFlag:(NSString *)flag abbr:(NSString *)abbr explain:(NSString *)explain {

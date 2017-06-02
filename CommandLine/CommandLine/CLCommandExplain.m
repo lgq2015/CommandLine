@@ -64,7 +64,8 @@
     if (!key)                               return NO;
     if (abbr.length > 1)                    return NO;
     if ([self hasAbbr:abbr ignoreKey:key])  return NO;
-    self.mOptionalKeyExplains[key] = [CLExplainItem keyValueItemWithKey:key abbr:abbr optional:optional defaultValue:defaultValue example:example explain:explain];
+	NSMutableDictionary *keyExplains = optional ? self.mOptionalKeyExplains : self.mKeyExplains;
+    keyExplains[key] = [CLExplainItem keyValueItemWithKey:key abbr:abbr optional:optional defaultValue:defaultValue example:example explain:explain];
     return YES;
 }
 
@@ -101,6 +102,8 @@
         }
 		if (withExplain) {
 			printf(":\n%s%s\n", [prefix stringByAppendingString:@"\t\t"].UTF8String, item.explain.UTF8String);
+		} else {
+			printf("\n");
 		}
     }
 	
