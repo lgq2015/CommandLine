@@ -55,6 +55,40 @@ id CLLaunchWithArguments(NSArray *arguments) {
 	}
 }
 
+id CLLaunchInDirectoryWithArguments(NSString *wd, NSArray *arguments) {
+	NSMutableArray *args = [NSMutableArray arrayWithArray:arguments];
+	NSString *launchPath = arguments.firstObject;
+	[args removeObjectAtIndex:0];
+	NSTask *task = [NSTask new];
+	NSPipe *pipe = [NSPipe pipe];
+	NSFileHandle *file = [pipe fileHandleForReading];
+	
+	task.currentDirectoryPath = wd;
+	task.launchPath = launchPath;
+	task.arguments = args;
+	task.standardInput = [NSFileHandle fileHandleWithNullDevice];
+	task.standardOutput = pipe;
+	task.standardError = pipe;
+	[task launch];
+	
+	//	[task waitUntilExit];
+	NSMutableData *mdata = [NSMutableData data];
+	while (task.isRunning) {
+		[mdata appendData:file.availableData];
+	}
+	NSString *output = [[NSString alloc] initWithData:mdata encoding:NSUTF8StringEncoding];
+	if ([output hasSuffix:@"\n"]) {
+		output = [output substringToIndex:output.length - 1];
+	}
+	
+	if (task.terminationStatus == 0) {
+		return output;
+	} else {
+		NSString *domain = [NSString stringWithFormat:@"com.unique.commandline.%@", launchPath.lastPathComponent.lowercaseString];
+		return [NSError errorWithDomain:domain code:task.terminationStatus userInfo:@{NSLocalizedDescriptionKey:output}];
+	}
+}
+
 @implementation NSString (CommandLine)
 
 + (instancetype)stringWithLaunchArguments:(NSArray<NSString *> *)arguments {

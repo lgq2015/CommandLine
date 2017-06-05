@@ -21,3 +21,5 @@
 @end
 
 id CLLaunchWithArguments(NSArray *arguments);
+
+id CLLaunchInDirectoryWithArguments(NSString *wd, NSArray *arguments);
