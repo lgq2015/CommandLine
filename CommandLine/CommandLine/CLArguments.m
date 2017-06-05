@@ -286,6 +286,11 @@
 
 - (void)printExplain:(CLCommandExplain *)explain {
     if (self.explain == explain) {
+		if (!self.requireCommand) {
+			printf("Usage: %s\n", self.executeFilePath.lastPathComponent.UTF8String);
+			[self.explain printExplainWithTabCount:1 withExplain:YES];
+			printf("\n");
+		}
         if (self.commandExplain.count > 0) {
             printf("Usage: %s command\n", self.executeFilePath.lastPathComponent.UTF8String);
             printf("commands are:\n");
@@ -295,12 +300,9 @@
             for (NSString *command in keys) {
                 CLCommandExplain *commandExplain = self.commandExplain[command];
                 printf("\t%s: %s\n", command.UTF8String, commandExplain.explain.UTF8String);
-                [commandExplain printExplainWithTabCount:2 withExplain:NO];
-                printf("\n");
+//                [commandExplain printExplainWithTabCount:2 withExplain:NO];
+//                printf("\n");
             }
-        } else {
-            printf("Usage: %s\n", self.executeFilePath.lastPathComponent.UTF8String);
-            [explain printExplainWithTabCount:1 withExplain:NO];
         }
     } else {
         printf("Usage: %s %s\n", self.executeFilePath.lastPathComponent.UTF8String, self.command.UTF8String);
