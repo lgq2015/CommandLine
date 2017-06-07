@@ -259,24 +259,23 @@
 }
 
 - (NSError *)executeCommand {
-    if (self.command == nil) {
+	CLCommandTask task = nil;
+	
+    if (self.command.length == 0) {
         if (self.requireCommand) {
             return CLError(CL_ERROR_NO_COMMAND, @"User did not type in command.");
         }
-        CLCommandTask task = self.explain.task;
-        if (!task) {
-            
-        }
-        
-    }
-    
-    CLCommandExplain *explain = self.commandExplain[self.command];
-    
-    if (!explain) {
-        return CLError(CL_ERROR_NO_EXPLAIN, @"Can not find command config.");
-    }
-    
-    CLCommandTask task = explain.task;
+        task = self.explain.task;
+	} else {
+		CLCommandExplain *explain = self.commandExplain[self.command];
+		
+		if (!explain) {
+			return CLError(CL_ERROR_NO_EXPLAIN, @"Can not find command config.");
+		}
+		
+		task = explain.task;
+	}
+	
     if (!task) {
         return CLError(CL_ERROR_NO_TASK, @"The command has not task.");
     }
