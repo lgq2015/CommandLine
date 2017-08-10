@@ -12,7 +12,7 @@
 #define CL_ERROR_NO_EXPLAIN (NSIntegerMax - 1)
 #define CL_ERROR_NO_TASK    (NSIntegerMax - 2)
 
-#define CLVerbose(arg, ...) if ([arg hasFlags:@"verbose"]) printf(__VA_ARGS__);
+#define CLVerbose(arg, ...) {if ([arg hasFlags:@"verbose"]) printf(__VA_ARGS__);}
 
 @class CLArguments;
 
@@ -75,12 +75,5 @@ typedef NSError *(^CLCommandTask)(CLArguments *arguments);
 - (NSString *)fullPathValueForKey:(NSString *)key;
 
 - (NSString *)fullIOPathAtIndex:(NSUInteger)index;
-
-/** 
- *  Environment
- */
-
-+ (NSString *)currentWorkDirectory;
-+ (NSString *)fullPathWithPath:(NSString *)path;
 
 @end

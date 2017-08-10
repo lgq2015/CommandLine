@@ -37,7 +37,7 @@ id CLLaunchWithArguments(NSArray *arguments) {
 	task.standardError = pipe;
 	[task launch];
 	
-//	[task waitUntilExit];
+//	[task waitUntilExit];inf
 	NSMutableData *mdata = [NSMutableData data];
 	while (task.isRunning) {
 		[mdata appendData:file.availableData];

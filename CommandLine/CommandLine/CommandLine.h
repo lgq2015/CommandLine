@@ -11,5 +11,7 @@
 
 #import "CLArguments.h"
 #import "NSTask+CommandLine.h"
+#import "CLStandard.h"
+#import "CLUtils.h"
 
 #endif /* CommandLine_h */
