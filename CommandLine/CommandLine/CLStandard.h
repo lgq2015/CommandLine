@@ -14,4 +14,6 @@
 
 + (BOOL)getBOOLFromStandardInput:(NSString *)tip;
 
++ (NSInteger)getIntegerFromStandardInput:(NSString *)tip;
+
 @end

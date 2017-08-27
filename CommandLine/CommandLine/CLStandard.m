@@ -36,4 +36,12 @@
     }
 }
 
++ (NSInteger)getIntegerFromStandardInput:(NSString *)tip {
+	NSInteger input = 0;
+	printf("%s: ", tip.UTF8String);
+	scanf("%ld", &input);
+	fflush(stdin);
+	return input;
+}
+
 @end
